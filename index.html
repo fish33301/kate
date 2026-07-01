@@ -137,7 +137,12 @@ tr.done-row .rn{text-decoration:line-through}
     <div class="login-sub">請選擇或輸入您的名字登入</div>
     <div class="emp-list" id="emp-chips"></div>
     <label class="login-label">或直接輸入名字</label>
-    <input class="login-input" id="login-name" type="text" placeholder="輸入姓名…" oninput="onNameInput(this.value)">
+    <input class="login-input" id="login-name" type="text" placeholder="輸入姓名…" oninput="onNameInput(this.value)" onkeydown="if(event.key==='Enter')doLogin()">
+    <div style="border-top:1px solid var(--border);margin:16px 0 14px;text-align:center">
+      <span style="background:var(--surface);padding:0 10px;font-size:11px;color:var(--hint)">── 主管登入 ──</span>
+    </div>
+    <label class="login-label">主管密碼</label>
+    <input class="login-input" id="login-pwd" type="password" placeholder="輸入主管密碼…" onkeydown="if(event.key==='Enter')doLogin()">
     <button class="login-btn" onclick="doLogin()">進入系統</button>
     <div class="login-err" id="login-err"></div>
   </div>
@@ -286,9 +291,24 @@ function onNameInput(val){
   });
 }
 
+const MGR_PWD='33696';
+
 function doLogin(){
   const name=document.getElementById('login-name').value.trim();
-  if(!name){ document.getElementById('login-err').textContent='請輸入名字'; return; }
+  const pwd=document.getElementById('login-pwd').value.trim();
+  const err=document.getElementById('login-err');
+  // Manager password login
+  if(pwd){
+    if(pwd===MGR_PWD){
+      currentUser={id:'0', name:'主管', role:'manager'};
+      enterApp();
+    } else {
+      err.textContent='密碼錯誤';
+    }
+    return;
+  }
+  if(!name){ err.textContent='請輸入名字或主管密碼'; return; }
+  err.textContent='';
   // Find matching employee
   const match=EMPLOYEES.find(e=>empNames[e.id]===name);
   if(match){
@@ -305,7 +325,7 @@ function doLogin(){
       enterApp();
     });
   } else {
-    document.getElementById('login-err').textContent='目前已無空位，請聯絡主管';
+    err.textContent='目前已無空位，請聯絡主管';
   }
 }
 
@@ -471,8 +491,8 @@ function renderSched(){
   const days=daysInMonth(schedYear,schedMonth);
   const d=schedData[ym]||{};
 
-  // Non-managers: only show own row
-  let emps=isManager()?EMPLOYEES:EMPLOYEES.filter(e=>e.id===currentUser.id);
+  // All users can see all employees; non-managers can only edit their own row
+  let emps=EMPLOYEES.slice();
   emps=emps.filter(e=>{
     const label=e.id+' '+(empNames[e.id]||'');
     if(q&&!label.toLowerCase().includes(q))return false;
