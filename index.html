@@ -126,6 +126,41 @@ tr.done-row .rn{text-decoration:line-through}
 .toast{position:fixed;bottom:20px;right:20px;background:var(--text);color:#fff;padding:9px 16px;border-radius:var(--rl);font-size:13px;opacity:0;transform:translateY(6px);transition:all .2s;z-index:999;pointer-events:none}
 .toast.show{opacity:1;transform:translateY(0)}
 .perm-note{font-size:12px;color:var(--hint);padding:6px 0;margin-bottom:4px}
+
+@media(max-width:600px){
+  header{height:auto;padding:8px 12px;gap:6px}
+  .logo{font-size:14px}
+  .sync-badge{display:none}
+  .user-pill{font-size:11px;padding:3px 8px}
+  .tabs{width:100%}
+  .tab-btn{flex:1;text-align:center;padding:6px 8px;font-size:12px}
+  main{padding:10px}
+  .month-bar{gap:6px}
+  .month-bar select{height:30px;font-size:12px;padding:0 6px}
+  .month-label{font-size:14px}
+  .stats-bar{gap:6px}
+  .stat-card{padding:8px 12px;min-width:calc(50% - 6px);flex:1}
+  .stat-val{font-size:18px}
+  .toolbar{gap:6px}
+  .toolbar input{width:120px;height:30px;font-size:12px}
+  .toolbar select{height:30px;font-size:12px}
+  .btn{height:30px;padding:0 10px;font-size:12px}
+  .table-wrap{max-height:calc(100vh - 240px);border-radius:var(--r)}
+  .sc-cell{width:32px;height:36px}
+  .dh{min-width:32px;padding:4px 2px 3px}
+  .dn{font-size:11px}
+  .dw{font-size:9px}
+  .sb{font-size:10px;padding:1px 3px}
+  td.sc{padding:4px 8px}
+  .emp-id{font-size:12px}
+  .nm-in{width:60px;font-size:11px}
+  .wd-cell{padding:0 6px;min-width:36px;font-size:12px}
+  .legend{gap:8px;font-size:11px;margin-bottom:8px}
+  #cl-table{min-width:700px}
+  .emp-tags-wrap{min-width:90px;padding:3px 4px}
+  .login-box{padding:24px 20px}
+  .emp-chip{font-size:11px;padding:4px 8px}
+}
 </style>
 </head>
 <body>
@@ -183,7 +218,7 @@ tr.done-row .rn{text-decoration:line-through}
     </div>
     <div class="toolbar">
       <input type="text" id="sch-q" placeholder="搜尋員工…" oninput="renderSched()">
-      <select id="sch-f" onchange="renderSched()">
+      <select id="sch-f" onchange="renderSched()" style="display:none">
         <option value="">全部員工</option>
         <option value="manager">主管</option>
         <option value="staff">一般員工</option>
@@ -348,9 +383,10 @@ function logout(){
 
 function applyPermissions(){
   const isMgr=currentUser.role==='manager';
-  // 清除班次按鈕只給主管
   document.getElementById('btn-clear-sched').style.display=isMgr?'':'none';
   document.getElementById('btn-clear-cl').style.display=isMgr?'':'none';
+  document.getElementById('sch-q').style.display=isMgr?'':'none';
+  document.getElementById('sch-f').style.display=isMgr?'':'none';
   document.getElementById('sched-perm-note').textContent=
     isMgr?'主管模式：可編輯所有人班次':'員工模式：只能編輯自己的班次';
 }
@@ -468,14 +504,18 @@ function renderSchedStats(){
   const ym=ymKey(schedYear,schedMonth);
   const days=daysInMonth(schedYear,schedMonth);
   const d=schedData[ym]||{};
+  const myEd=(d[currentUser.id]||{});
+  let myWork=0;
+  for(let dd=1;dd<=days;dd++){if(myEd[dd])myWork++;}
+  if(!isManager()){
+    document.getElementById('sched-stats').innerHTML=`
+      <div class="stat-card"><div class="stat-label">我的出勤天</div><div class="stat-val blue">${myWork}</div></div>`;
+    return;
+  }
   let worked=0;
   EMPLOYEES.forEach(e=>{const ed=d[e.id]||{};for(let dd=1;dd<=days;dd++){if(ed[dd])worked++;}});
   const total=EMPLOYEES.length*days;
   const pct=Math.round(worked/total*100);
-  // My own stats
-  const myEd=(d[currentUser.id]||{});
-  let myWork=0;
-  for(let dd=1;dd<=days;dd++){if(myEd[dd])myWork++;}
   document.getElementById('sched-stats').innerHTML=`
     <div class="stat-card"><div class="stat-label">我的出勤天</div><div class="stat-val blue">${myWork}</div></div>
     <div class="stat-card"><div class="stat-label">全員出勤班次</div><div class="stat-val green">${worked}</div></div>
@@ -520,7 +560,7 @@ function renderSched(){
       if(v)work++;
       const w=new Date(schedYear,schedMonth-1,dd).getDay();
       const wknd=(w===0||w===6)&&!v?'background:rgba(0,0,0,0.02)':'';
-      const badge=v==='O'?`<span class="sb sb-on">出</span>`:v==='M'?`<span class="sb sb-mgr">主</span>`:v==='X'?`<span class="sb sb-off">休</span>`:`<span class="sb-em">—</span>`;
+      const badge=v==='O'?`<span class="sb sb-on">出</span>`:v==='M'?`<span class="sb sb-mgr">主</span>`:v==='X'?`<span class="sb sb-off">休</span>`:`<span class="sb sb-off" style="opacity:.2">休</span>`;
       const lockedCls=editable?'':'locked';
       cells+=`<td class="sc-cell ${lockedCls}" style="${wknd}" onclick="${editable?`cycleShift('${e.id}',${dd},'${ym}',this)`:''}">${badge}</td>`;
     }
@@ -541,11 +581,11 @@ function renderSched(){
 
 function cycleShift(eid,day,ym,cell){
   if(!canEditSched(eid))return;
-  const seq=['','O','M','X'];
+  const seq=isManager()?['','O','M','X']:['','O','X'];
   const cur=((schedData[ym]||{})[eid]||{})[day]||'';
   const next=seq[(seq.indexOf(cur)+1)%seq.length];
   db.ref(`sched/${ym}/${eid}/${day}`).set(next||null);
-  cell.innerHTML=next==='O'?`<span class="sb sb-on">出</span>`:next==='M'?`<span class="sb sb-mgr">主</span>`:next==='X'?`<span class="sb sb-off">休</span>`:`<span class="sb-em">—</span>`;
+  cell.innerHTML=next==='O'?`<span class="sb sb-on">出</span>`:next==='M'?`<span class="sb sb-mgr">主</span>`:next==='X'?`<span class="sb sb-off">休</span>`:`<span class="sb sb-off" style="opacity:.2">休</span>`;
 }
 
 function saveEmpName(eid,val){
