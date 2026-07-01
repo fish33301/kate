@@ -108,6 +108,12 @@ tr.my-row td.sc{background:#f0f6ff!important}
 .cl-in:focus{outline:none;border-color:var(--accent);background:var(--own-bg)}
 .cl-in::placeholder{color:var(--hint)}
 .cl-in:disabled{color:var(--hint);cursor:default}
+.emp-tags-wrap{display:flex;flex-wrap:wrap;gap:4px;align-items:center;padding:4px 6px;min-width:120px}
+.emp-tag{display:inline-flex;align-items:center;gap:3px;background:var(--own-bg);color:var(--own-t);border-radius:12px;padding:2px 8px;font-size:11px;font-weight:500;white-space:nowrap}
+.emp-tag-del{background:none;border:none;cursor:pointer;color:var(--own-t);font-size:13px;line-height:1;padding:0 0 0 2px;opacity:.7}
+.emp-tag-del:hover{opacity:1}
+.emp-add-btn{background:none;border:1px dashed var(--border-s);border-radius:12px;padding:2px 8px;font-size:13px;cursor:pointer;color:var(--sub);line-height:1}
+.emp-add-btn:hover{border-color:var(--accent);color:var(--accent)}
 .ck-wrap{text-align:center;vertical-align:middle;padding:0}
 .ck-wrap input[type=checkbox]{width:15px;height:15px;cursor:pointer;accent-color:var(--accent);display:block;margin:0 auto}
 .ck-wrap input[type=checkbox]:disabled{cursor:default;opacity:.4}
@@ -206,9 +212,9 @@ tr.done-row .rn{text-decoration:line-through}
       <input type="text" id="cl-q" placeholder="搜尋物件…" oninput="renderCleaning()">
       <select id="cl-df" onchange="renderCleaning()">
         <option value="">全部狀態</option>
-        <option value="done">已完成</option>
-        <option value="undone">未完成</option>
         <option value="mine">我負責的</option>
+        <option value="checked">已主管檢查</option>
+        <option value="unchecked">未主管檢查</option>
       </select>
       <button class="btn" id="btn-clear-cl" onclick="clearDayCl()">清除本日</button>
       <button class="btn btn-primary" onclick="exportCl()">匯出 CSV</button>
@@ -551,22 +557,21 @@ function exportSched(){
 }
 
 /* ══ CLEANING ══ */
+function getEmps(rd){return Array.isArray(rd.emps)?rd.emps:(rd.emp?[rd.emp]:[]);}
+
 function renderClStats(ym,day){
   const dayData=((clData[ym]||{})[day])||{};
-  let done=0,mgr=0,mine=0;
+  let mgr=0,mine=0,total=ROOMS.length;
   ROOMS.forEach(r=>{
     const rd=dayData[roomKey(r.name)]||{};
-    if(rd.done)done++;if(rd.mgr)mgr++;
-    if(rd.emp===currentUser.id)mine++;
+    if(rd.mgr)mgr++;
+    if(getEmps(rd).includes(currentUser.id))mine++;
   });
-  const total=ROOMS.length;
-  const pct=Math.round(done/total*100);
   document.getElementById('cl-stats').innerHTML=`
     <div class="stat-card"><div class="stat-label">今日物件</div><div class="stat-val">${total}</div></div>
     <div class="stat-card"><div class="stat-label">我負責</div><div class="stat-val blue">${mine}</div></div>
-    <div class="stat-card"><div class="stat-label">已完成</div><div class="stat-val green">${done}</div></div>
-    <div class="stat-card"><div class="stat-label">未完成</div><div class="stat-val ${total-done>0?'red':''}">${total-done}</div></div>
-    <div class="stat-card" style="flex:1;min-width:140px"><div class="stat-label">完成率</div><div class="stat-val">${pct}%</div><div class="prog-wrap"><div class="prog-bar" style="width:${pct}%"></div></div></div>`;
+    <div class="stat-card"><div class="stat-label">主管檢查</div><div class="stat-val green">${mgr}</div></div>
+    <div class="stat-card"><div class="stat-label">未檢查</div><div class="stat-val ${total-mgr>0?'red':''}">${total-mgr}</div></div>`;
 }
 
 function renderCleaning(){
@@ -581,9 +586,9 @@ function renderCleaning(){
     if(typ&&r.type!==typ)return false;
     if(q&&!r.name.toLowerCase().includes(q))return false;
     const rd=dayData[roomKey(r.name)]||{};
-    if(df==='done'&&!rd.done)return false;
-    if(df==='undone'&&rd.done)return false;
-    if(df==='mine'&&rd.emp!==currentUser.id)return false;
+    if(df==='mine'&&!getEmps(rd).includes(currentUser.id))return false;
+    if(df==='checked'&&!rd.mgr)return false;
+    if(df==='unchecked'&&rd.mgr)return false;
     return true;
   });
   renderClStats(ym,day);
@@ -594,10 +599,8 @@ function renderCleaning(){
     <th style="width:72px">退房時間</th>
     <th style="width:72px">開始時間</th>
     <th style="width:72px">結束時間</th>
-    <th style="width:80px">負責員工</th>
-    <th style="width:52px;text-align:center">完成✓</th>
-    <th style="width:72px;text-align:center">主管在場✓</th>
-    <th style="width:52px;text-align:center">教學✓</th>
+    <th style="min-width:130px">負責員工</th>
+    <th style="width:72px;text-align:center">主管檢查✓</th>
     <th style="min-width:120px;text-align:left;padding-left:8px">備註</th>
   </tr></thead><tbody>`;
   rooms.forEach((r,i)=>{
@@ -605,21 +608,26 @@ function renderCleaning(){
     const rd=dayData[rk]||{};
     const esc=r.name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
     // editable if: manager, or assigned to me, or not yet assigned
-    const assigned=rd.emp||'';
-    const editable=canEditCl(assigned);
+    const empArr=getEmps(rd);
+    const isMine=empArr.includes(currentUser.id);
+    const editable=isManager()||isMine||empArr.length===0;
     const dis=editable?'':'disabled';
-    const empDisplay=assigned?(empNames[assigned]||assigned):'';
-    h+=`<tr class="${rd.done?'done-row':''}${assigned===currentUser.id?' my-row':''}">
+    const empTagsHtml=empArr.map(eid=>{
+      const nm=empNames[eid]||eid;
+      const canDel=isManager()||(eid===currentUser.id);
+      return `<span class="emp-tag">${nm}${canDel?`<button class="emp-tag-del" onclick="removeEmp('${ym}',${day},'${esc}','${eid}')" title="移除">×</button>`:''}</span>`;
+    }).join('');
+    const canAdd=isManager()||(!isMine);
+    const addBtn=canAdd?`<button class="emp-add-btn" onclick="addSelfEmp('${ym}',${day},'${esc}')" title="加入自己">＋</button>`:'';
+    h+=`<tr class="${isMine?' my-row':''}">
       <td class="nc">${i+1}</td>
       <td class="sc"><span class="rn">${r.name}</span></td>
       <td><span class="badge ${r.type==='自社'?'badge-own':'badge-oth'}">${r.type}</span></td>
       <td><input class="cl-in" type="text" placeholder="HH:MM" value="${rd.checkout||''}" ${dis} onchange="saveCl('${ym}',${day},'${esc}','checkout',this.value)" style="width:68px"></td>
       <td><input class="cl-in" type="text" placeholder="HH:MM" value="${rd.startTime||''}" ${dis} onchange="saveCl('${ym}',${day},'${esc}','startTime',this.value)" style="width:68px"></td>
       <td><input class="cl-in" type="text" placeholder="HH:MM" value="${rd.endTime||''}" ${dis} onchange="saveCl('${ym}',${day},'${esc}','endTime',this.value)" style="width:68px"></td>
-      <td><input class="cl-in" type="text" placeholder="${isManager()?'員工ID':'我的ID'}" value="${assigned}" ${isManager()?`onchange="saveCl('${ym}',${day},'${esc}','emp',this.value)"`:`readonly`} style="width:72px" title="${empDisplay}"></td>
-      <td class="ck-wrap"><input type="checkbox" ${rd.done?'checked':''} ${dis} onchange="saveCl('${ym}',${day},'${esc}','done',this.checked);this.closest('tr').classList.toggle('done-row',this.checked);renderClStats('${ym}',${day})"></td>
-      <td class="ck-wrap"><input type="checkbox" ${rd.mgr?'checked':''} ${dis} onchange="saveCl('${ym}',${day},'${esc}','mgr',this.checked);renderClStats('${ym}',${day})"></td>
-      <td class="ck-wrap"><input type="checkbox" ${rd.teach?'checked':''} ${dis} onchange="saveCl('${ym}',${day},'${esc}','teach',this.checked)"></td>
+      <td><div class="emp-tags-wrap">${empTagsHtml}${addBtn}</div></td>
+      <td class="ck-wrap"><input type="checkbox" ${rd.mgr?'checked':''} ${isManager()?'':'disabled'} onchange="saveCl('${ym}',${day},'${esc}','mgr',this.checked);renderClStats('${ym}',${day})"></td>
       <td><input class="cl-in" type="text" placeholder="備註" value="${rd.note||''}" ${dis} onchange="saveCl('${ym}',${day},'${esc}','note',this.value)" style="width:100%;min-width:110px"></td>
     </tr>`;
   });
@@ -627,10 +635,20 @@ function renderCleaning(){
   document.getElementById('cl-table').innerHTML=h;
 }
 
-function claimRoom(ym,day,name){
-  saveCl(ym,day,name,'emp',currentUser.id);
-  toast('已認領：'+name);
-  setTimeout(()=>renderCleaning(),300);
+function addSelfEmp(ym,day,name){
+  const rk=roomKey(name);
+  const rd=((clData[ym]||{})[day]||{})[rk]||{};
+  const arr=getEmps(rd);
+  if(arr.includes(currentUser.id)){toast('你已在名單中');return;}
+  arr.push(currentUser.id);
+  db.ref(`cleaning/${ym}/${day}/${rk}/emps`).set(arr);
+}
+
+function removeEmp(ym,day,name,eid){
+  const rk=roomKey(name);
+  const rd=((clData[ym]||{})[day]||{})[rk]||{};
+  const arr=getEmps(rd).filter(x=>x!==eid);
+  db.ref(`cleaning/${ym}/${day}/${rk}/emps`).set(arr.length?arr:null);
 }
 
 function saveCl(ym,day,name,field,val){
@@ -648,13 +666,14 @@ function clearDayCl(){
 function exportCl(){
   const ym=ymKey(clYear,clMonth);
   const days=daysInMonth(clYear,clMonth);
-  let csv='日期,房間名稱,類別,退房時間,開始時間,結束時間,負責員工ID,負責員工姓名,打掃完成,主管在場,教學記錄,備註\n';
+  let csv='日期,房間名稱,類別,退房時間,開始時間,結束時間,負責員工,主管檢查,備註\n';
   for(let d=1;d<=days;d++){
     const dateStr=`${clYear}/${clMonth}/${d}(${WEEKS[new Date(clYear,clMonth-1,d).getDay()]})`;
     const dayData=((clData[ym]||{})[d])||{};
     ROOMS.forEach(r=>{
       const rd=dayData[roomKey(r.name)]||{};
-      csv+=`${dateStr},${r.name},${r.type},${rd.checkout||''},${rd.startTime||''},${rd.endTime||''},${rd.emp||''},${empNames[rd.emp]||''},${rd.done?'✓':''},${rd.mgr?'✓':''},${rd.teach?'✓':''},"${(rd.note||'').replace(/"/g,'""')}"\n`;
+      const empNms=getEmps(rd).map(eid=>empNames[eid]||eid).join('/');
+      csv+=`${dateStr},${r.name},${r.type},${rd.checkout||''},${rd.startTime||''},${rd.endTime||''},${empNms},${rd.mgr?'✓':''},"${(rd.note||'').replace(/"/g,'""')}"\n`;
     });
   }
   download(`${clYear}年${clMonth}月打掃紀錄.csv`,csv);
