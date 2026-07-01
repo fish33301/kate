@@ -130,36 +130,44 @@ tr.done-row .rn{text-decoration:line-through}
 @media(max-width:600px){
   header{height:auto;padding:8px 12px;gap:6px}
   .logo{font-size:14px}
-  .sync-badge{display:none}
+  .sync-badge{font-size:10px;padding:2px 6px}
   .user-pill{font-size:11px;padding:3px 8px}
+  .header-right{gap:6px;width:100%}
   .tabs{width:100%}
-  .tab-btn{flex:1;text-align:center;padding:6px 8px;font-size:12px}
-  main{padding:10px}
+  .tab-btn{flex:1;text-align:center;padding:6px 4px;font-size:12px}
+  main{padding:8px}
   .month-bar{gap:6px}
-  .month-bar select{height:30px;font-size:12px;padding:0 6px}
-  .month-label{font-size:14px}
-  .stats-bar{gap:6px}
-  .stat-card{padding:8px 12px;min-width:calc(50% - 6px);flex:1}
-  .stat-val{font-size:18px}
+  .month-bar select{height:30px;font-size:12px;padding:0 6px;flex:1}
+  .month-label{font-size:14px;width:100%}
+  .stats-bar{gap:6px;display:grid;grid-template-columns:1fr 1fr}
+  .stat-card{padding:8px 10px;min-width:0}
+  .stat-card:last-child{grid-column:1/-1}
+  .stat-val{font-size:17px}
+  .stat-label{font-size:10px}
   .toolbar{gap:6px}
-  .toolbar input{width:120px;height:30px;font-size:12px}
-  .toolbar select{height:30px;font-size:12px}
+  .toolbar input{width:100%;height:30px;font-size:12px;flex:1}
+  .toolbar select{height:30px;font-size:12px;flex:1}
   .btn{height:30px;padding:0 10px;font-size:12px}
-  .table-wrap{max-height:calc(100vh - 240px);border-radius:var(--r)}
-  .sc-cell{width:32px;height:36px}
-  .dh{min-width:32px;padding:4px 2px 3px}
-  .dn{font-size:11px}
-  .dw{font-size:9px}
-  .sb{font-size:10px;padding:1px 3px}
-  td.sc{padding:4px 8px}
-  .emp-id{font-size:12px}
-  .nm-in{width:60px;font-size:11px}
-  .wd-cell{padding:0 6px;min-width:36px;font-size:12px}
-  .legend{gap:8px;font-size:11px;margin-bottom:8px}
-  #cl-table{min-width:700px}
-  .emp-tags-wrap{min-width:90px;padding:3px 4px}
-  .login-box{padding:24px 20px}
+  .toolbar{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .toolbar input,.toolbar select{grid-column:1/-1}
+  .table-wrap{max-height:calc(100vh - 200px);border-radius:var(--r)}
+  .sc-cell{width:30px;height:34px}
+  .dh{min-width:30px;padding:3px 1px 2px}
+  .dn{font-size:10px}
+  .dw{font-size:9px;padding:1px 2px}
+  .sb{font-size:10px;padding:1px 2px}
+  td.sc{padding:3px 6px;min-width:80px}
+  .emp-id{font-size:11px;gap:3px}
+  .nm-in{width:52px;font-size:11px}
+  .wd-cell{padding:0 4px;min-width:30px;font-size:11px}
+  .legend{gap:6px;font-size:11px;margin-bottom:6px;display:grid;grid-template-columns:auto auto auto 1fr}
+  .perm-note{grid-column:1/-1;font-size:10px}
+  #cl-table{min-width:600px}
+  .emp-tags-wrap{min-width:80px;padding:2px 4px;gap:3px}
+  .emp-tag{font-size:10px;padding:1px 6px}
+  .login-box{padding:24px 16px}
   .emp-chip{font-size:11px;padding:4px 8px}
+  thead th{padding:5px 3px;font-size:10px}
 }
 </style>
 </head>
