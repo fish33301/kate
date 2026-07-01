@@ -5,32 +5,56 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>管理系統</title>
 <style>
-:root {
-  --bg:#F7F6F3;--surface:#FFFFFF;--surface2:#F0EEE9;--border:rgba(0,0,0,0.10);
-  --border-s:rgba(0,0,0,0.18);--text:#1A1916;--sub:#6B6860;--hint:#A09E99;
+:root{
+  --bg:#F7F6F3;--surface:#FFF;--surface2:#F0EEE9;--border:rgba(0,0,0,.10);
+  --border-s:rgba(0,0,0,.18);--text:#1A1916;--sub:#6B6860;--hint:#A09E99;
   --own-bg:#EAF2FF;--own-t:#1A4A8A;--oth-bg:#FFF3E0;--oth-t:#7A4000;
   --green:#2E7D4F;--green-bg:#E8F5EE;--purple:#5B3FA8;--purple-bg:#EEE9FF;
   --red:#C0392B;--red-bg:#FDECEA;--accent:#1A4A8A;--r:8px;--rl:12px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Hiragino Kaku Gothic Pro','Noto Sans TC',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:14px;min-height:100vh}
+
+/* ── Login Screen ── */
+#login-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:500}
+.login-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:36px 32px;width:340px;max-width:92vw;text-align:center}
+.login-logo{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px}
+.login-logo-dot{width:8px;height:8px;background:var(--accent);border-radius:50%}
+.login-title{font-size:17px;font-weight:700}
+.login-sub{font-size:12px;color:var(--hint);margin-bottom:28px}
+.login-label{font-size:12px;color:var(--sub);text-align:left;margin-bottom:6px;display:block}
+.login-input{width:100%;height:38px;padding:0 12px;border:1px solid var(--border-s);border-radius:var(--r);font-size:14px;font-family:inherit;background:var(--surface);color:var(--text);margin-bottom:16px}
+.login-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(26,74,138,.12)}
+.login-btn{width:100%;height:38px;background:var(--accent);color:#fff;border:none;border-radius:var(--r);font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;transition:background .12s}
+.login-btn:hover{background:#143d72}
+.login-err{font-size:12px;color:var(--red);margin-top:10px;min-height:18px}
+.emp-list{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px;justify-content:center}
+.emp-chip{padding:5px 10px;border:1px solid var(--border-s);border-radius:20px;font-size:12px;cursor:pointer;background:var(--surface);color:var(--sub);transition:all .12s}
+.emp-chip:hover{border-color:var(--accent);color:var(--accent)}
+.emp-chip.selected{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* ── Header ── */
 header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:100;gap:12px;flex-wrap:wrap}
 .logo{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;white-space:nowrap}
 .logo-dot{width:7px;height:7px;background:var(--accent);border-radius:50%}
 .header-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.user-pill{font-size:12px;padding:4px 10px;background:var(--own-bg);color:var(--own-t);border-radius:20px;font-weight:600;cursor:pointer;border:none;font-family:inherit}
+.user-pill:hover{background:#d0e4ff}
 .sync-badge{font-size:11px;padding:3px 8px;border-radius:20px;font-weight:500;white-space:nowrap}
 .sync-ok{background:var(--green-bg);color:var(--green)}
 .sync-err{background:var(--red-bg);color:var(--red)}
 .sync-ing{background:#FFF3E0;color:#7A4000}
 .tabs{display:flex;gap:2px;background:var(--surface2);padding:3px;border-radius:var(--rl)}
 .tab-btn{padding:6px 16px;font-size:13px;font-weight:500;color:var(--sub);background:none;border:none;border-radius:var(--r);cursor:pointer;transition:background .15s,color .15s;white-space:nowrap;font-family:inherit}
-.tab-btn.active{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,0.08)}
-.tab-btn:hover:not(.active){background:rgba(0,0,0,0.04)}
+.tab-btn.active{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.tab-btn:hover:not(.active){background:rgba(0,0,0,.04)}
+
+/* ── Main ── */
 main{max-width:1500px;margin:0 auto;padding:16px}
 .section{display:none}.section.active{display:block}
 .month-bar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
-.month-bar select,.month-bar input[type=number]{height:32px;padding:0 10px;font-size:13px;border:1px solid var(--border-s);border-radius:var(--r);background:var(--surface);color:var(--text);font-family:inherit}
-.month-label{font-size:15px;font-weight:600;color:var(--text)}
+.month-bar select{height:32px;padding:0 10px;font-size:13px;border:1px solid var(--border-s);border-radius:var(--r);background:var(--surface);color:var(--text);font-family:inherit}
+.month-label{font-size:15px;font-weight:600}
 .stats-bar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
 .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:10px 16px;min-width:100px}
 .stat-label{font-size:11px;color:var(--hint);margin-bottom:3px}
@@ -55,10 +79,13 @@ th.sc{background:var(--surface2);z-index:4}
 td.sc{background:var(--surface);text-align:left;padding:5px 10px}
 tr:hover td{background:#F9F8F6}
 tr:hover td.sc{background:#F9F8F6}
+tr.my-row td{background:#f0f6ff!important}
+tr.my-row td.sc{background:#f0f6ff!important}
 .emp-id{font-weight:700;font-size:13px;display:flex;align-items:center;gap:5px;white-space:nowrap}
 .emp-id.mgr{color:var(--accent)}
 .nm-in{border:none;background:transparent;font-size:12px;color:var(--sub);font-family:inherit;width:70px;padding:2px 4px;border-radius:4px}
 .nm-in:focus{outline:none;background:var(--own-bg);color:var(--text)}
+.nm-in:disabled{color:var(--hint);cursor:default}
 .dh{padding:5px 3px 3px;min-width:36px}
 .dn{font-size:12px;font-weight:600}
 .dw{font-size:10px;font-weight:500;display:inline-block;border-radius:3px;padding:1px 3px;margin-top:1px}
@@ -66,7 +93,8 @@ tr:hover td.sc{background:#F9F8F6}
 .dw.sat{background:var(--purple-bg);color:var(--purple)}
 .dw.wd{color:var(--hint)}
 .sc-cell{width:36px;height:38px;cursor:pointer;user-select:none;transition:background .1s;border-right:1px solid var(--border)}
-.sc-cell:hover{background:var(--surface2)!important}
+.sc-cell.locked{cursor:default;opacity:.5}
+.sc-cell:hover:not(.locked){background:var(--surface2)!important}
 .sb{display:inline-block;font-size:11px;font-weight:600;padding:2px 4px;border-radius:3px}
 .sb-on{background:var(--green-bg);color:var(--green)}
 .sb-mgr{background:var(--purple-bg);color:var(--purple)}
@@ -79,8 +107,11 @@ tr:hover td.sc{background:#F9F8F6}
 .cl-in{border:1px solid transparent;background:transparent;font-size:12px;color:var(--text);font-family:inherit;padding:2px 5px;border-radius:4px;width:100%;min-width:58px}
 .cl-in:focus{outline:none;border-color:var(--accent);background:var(--own-bg)}
 .cl-in::placeholder{color:var(--hint)}
-.ck-wrap{display:flex;justify-content:center}
-.ck-wrap input[type=checkbox]{width:15px;height:15px;cursor:pointer;accent-color:var(--accent)}
+.cl-in:disabled{color:var(--hint);cursor:default}
+.ck-wrap{text-align:center;vertical-align:middle;padding:0}
+.ck-wrap input[type=checkbox]{width:15px;height:15px;cursor:pointer;accent-color:var(--accent);display:block;margin:0 auto}
+.ck-wrap input[type=checkbox]:disabled{cursor:default;opacity:.4}
+#cl-table{width:100%;min-width:880px}
 tr.done-row td{opacity:.55}
 tr.done-row .rn{text-decoration:line-through}
 .rn{font-weight:500;white-space:nowrap}
@@ -88,20 +119,30 @@ tr.done-row .rn{text-decoration:line-through}
 .legend{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px;font-size:12px;color:var(--sub)}
 .toast{position:fixed;bottom:20px;right:20px;background:var(--text);color:#fff;padding:9px 16px;border-radius:var(--rl);font-size:13px;opacity:0;transform:translateY(6px);transition:all .2s;z-index:999;pointer-events:none}
 .toast.show{opacity:1;transform:translateY(0)}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;display:flex;align-items:center;justify-content:center}
-.modal{background:var(--surface);border-radius:var(--rl);padding:24px;width:340px;max-width:90vw}
-.modal h2{font-size:15px;font-weight:600;margin-bottom:16px}
-.modal label{display:block;font-size:12px;color:var(--sub);margin-bottom:4px;margin-top:12px}
-.modal input{width:100%;height:34px;padding:0 10px;border:1px solid var(--border-s);border-radius:var(--r);font-size:13px;font-family:inherit;background:var(--surface)}
-.modal-btns{display:flex;gap:8px;margin-top:20px;justify-content:flex-end}
+.perm-note{font-size:12px;color:var(--hint);padding:6px 0;margin-bottom:4px}
 </style>
 </head>
 <body>
 
+<!-- ══ Login Screen ══ -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo"><div class="login-logo-dot"></div><span class="login-title">管理系統</span></div>
+    <div class="login-sub">請選擇或輸入您的名字登入</div>
+    <div class="emp-list" id="emp-chips"></div>
+    <label class="login-label">或直接輸入名字</label>
+    <input class="login-input" id="login-name" type="text" placeholder="輸入姓名…" oninput="onNameInput(this.value)">
+    <button class="login-btn" onclick="doLogin()">進入系統</button>
+    <div class="login-err" id="login-err"></div>
+  </div>
+</div>
+
+<!-- ══ App ══ -->
 <header>
   <div class="logo"><div class="logo-dot"></div>管理系統</div>
   <div class="header-right">
     <span class="sync-badge sync-ing" id="sync-badge">⏳ 連線中…</span>
+    <button class="user-pill" id="user-pill" onclick="logout()"></button>
     <div class="tabs">
       <button class="tab-btn active" onclick="showTab('schedule')">📅 排班表</button>
       <button class="tab-btn" onclick="showTab('cleaning')">✅ 打掃紀錄</button>
@@ -110,7 +151,7 @@ tr.done-row .rn{text-decoration:line-through}
 </header>
 
 <main>
-  <!-- ══ 排班表 ══ -->
+  <!-- ── 排班表 ── -->
   <div id="sec-schedule" class="section active">
     <div class="month-bar">
       <span class="month-label" id="sched-month-label"></span>
@@ -127,7 +168,7 @@ tr.done-row .rn{text-decoration:line-through}
       <span><span class="sb sb-on">出</span> 出勤</span>
       <span><span class="sb sb-mgr">主</span> 主管帶班</span>
       <span><span class="sb sb-off">休</span> 休假</span>
-      <span style="color:var(--hint)">點格子切換班次</span>
+      <span id="sched-perm-note" class="perm-note"></span>
     </div>
     <div class="toolbar">
       <input type="text" id="sch-q" placeholder="搜尋員工…" oninput="renderSched()">
@@ -136,13 +177,13 @@ tr.done-row .rn{text-decoration:line-through}
         <option value="manager">主管</option>
         <option value="staff">一般員工</option>
       </select>
-      <button class="btn" onclick="clearSched()">清除本月班次</button>
+      <button class="btn" id="btn-clear-sched" onclick="clearSched()">清除本月班次</button>
       <button class="btn btn-primary" onclick="exportSched()">匯出 CSV</button>
     </div>
     <div class="table-wrap"><table id="sched-table"></table></div>
   </div>
 
-  <!-- ══ 打掃紀錄 ══ -->
+  <!-- ── 打掃紀錄 ── -->
   <div id="sec-cleaning" class="section">
     <div class="month-bar">
       <span class="month-label" id="cl-month-label"></span>
@@ -167,8 +208,9 @@ tr.done-row .rn{text-decoration:line-through}
         <option value="">全部狀態</option>
         <option value="done">已完成</option>
         <option value="undone">未完成</option>
+        <option value="mine">我負責的</option>
       </select>
-      <button class="btn" onclick="clearDayCl()">清除本日</button>
+      <button class="btn" id="btn-clear-cl" onclick="clearDayCl()">清除本日</button>
       <button class="btn btn-primary" onclick="exportCl()">匯出 CSV</button>
     </div>
     <div class="table-wrap"><table id="cl-table"></table></div>
@@ -177,39 +219,29 @@ tr.done-row .rn{text-decoration:line-through}
 
 <div class="toast" id="toast"></div>
 
-<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
 <script>
-/* ── Firebase Init ── */
-const firebaseConfig = {
-  apiKey: "AIzaSyDIS9wZH0pFMUFj-CTROb-cewiFTknrKmE",
-  authDomain: "daska-f4811.firebaseapp.com",
-  databaseURL: "https://daska-f4811-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "daska-f4811",
-  storageBucket: "daska-f4811.firebasestorage.app",
-  messagingSenderId: "1046969996907",
-  appId: "1:1046969996907:web:4d444ef0ade46e80e2432e",
-  measurementId: "G-W1P1LKCYMG"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-
-const syncBadge = document.getElementById('sync-badge');
-db.ref('.info/connected').on('value', snap => {
-  if(snap.val()){
-    syncBadge.textContent = '🟢 已連線';
-    syncBadge.className = 'sync-badge sync-ok';
-  } else {
-    syncBadge.textContent = '🔴 離線';
-    syncBadge.className = 'sync-badge sync-err';
-  }
+/* ── Firebase ── */
+firebase.initializeApp({
+  apiKey:"AIzaSyDIS9wZH0pFMUFj-CTROb-cewiFTknrKmE",
+  authDomain:"daska-f4811.firebaseapp.com",
+  databaseURL:"https://daska-f4811-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"daska-f4811",
+  storageBucket:"daska-f4811.firebasestorage.app",
+  messagingSenderId:"1046969996907",
+  appId:"1:1046969996907:web:4d444ef0ade46e80e2432e"
+});
+const db=firebase.database();
+db.ref('.info/connected').on('value',s=>{
+  const el=document.getElementById('sync-badge');
+  el.textContent=s.val()?'🟢 已連線':'🔴 離線';
+  el.className='sync-badge '+(s.val()?'sync-ok':'sync-err');
 });
 
 /* ── Constants ── */
-const WEEKS = ['日','一','二','三','四','五','六'];
-const EMPLOYEES = [
+const WEEKS=['日','一','二','三','四','五','六'];
+const EMPLOYEES=[
   {id:'0',role:'manager'},
   ...Array.from({length:15},(_,i)=>({id:String(i+1),role:'staff'}))
 ];
@@ -217,45 +249,123 @@ const OWN=['西新宿物語C','西新宿物語B','西新宿物語A','下北澤�
 const OTHER=['新大久保一戶建','北新宿一戶建','池袋物語(大山站)202','池袋物語(大山站)203','LiveGRACE Hotel 浅草','SIDEPLACE OSHIAGE','江東橋','歌舞伎町435','歌舞伎町501','小新宿物語','秋葉原共用部'];
 const ROOMS=[...OWN.map(n=>({name:n,type:'自社'})),...OTHER.map(n=>({name:n,type:'他社'}))];
 
+/* ── Session ── */
+let currentUser=null; // {id, name, role}
+const empNames={};
+
+/* ── Login ── */
+function buildChips(){
+  const c=document.getElementById('emp-chips');
+  c.innerHTML='';
+  // Show registered employees as chips
+  EMPLOYEES.forEach(e=>{
+    const name=empNames[e.id];
+    if(!name) return;
+    const chip=document.createElement('button');
+    chip.className='emp-chip';
+    chip.textContent=name+(e.role==='manager'?' ★':'');
+    chip.dataset.id=e.id;
+    chip.onclick=()=>{
+      document.querySelectorAll('.emp-chip').forEach(x=>x.classList.remove('selected'));
+      chip.classList.add('selected');
+      document.getElementById('login-name').value=name;
+    };
+    c.appendChild(chip);
+  });
+}
+
+function onNameInput(val){
+  document.querySelectorAll('.emp-chip').forEach(c=>{
+    c.classList.toggle('selected', c.textContent.replace(' ★','')===val.trim());
+  });
+}
+
+function doLogin(){
+  const name=document.getElementById('login-name').value.trim();
+  if(!name){ document.getElementById('login-err').textContent='請輸入名字'; return; }
+  // Find matching employee
+  const match=EMPLOYEES.find(e=>empNames[e.id]===name);
+  if(match){
+    currentUser={id:match.id, name, role:match.role};
+    enterApp();
+    return;
+  }
+  // New name — assign to first empty slot
+  const emptySlot=EMPLOYEES.find(e=>e.role==='staff'&&!empNames[e.id]);
+  if(emptySlot){
+    db.ref('empNames/'+emptySlot.id).set(name).then(()=>{
+      empNames[emptySlot.id]=name;
+      currentUser={id:emptySlot.id, name, role:'staff'};
+      enterApp();
+    });
+  } else {
+    document.getElementById('login-err').textContent='目前已無空位，請聯絡主管';
+  }
+}
+
+function enterApp(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('user-pill').textContent=
+    (currentUser.role==='manager'?'★ ':'')+currentUser.name+' ('+currentUser.id+')　登出';
+  applyPermissions();
+  renderSched();
+  renderCleaning();
+}
+
+function logout(){
+  currentUser=null;
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('login-name').value='';
+  document.getElementById('login-err').textContent='';
+  document.querySelectorAll('.emp-chip').forEach(c=>c.classList.remove('selected'));
+}
+
+function applyPermissions(){
+  const isMgr=currentUser.role==='manager';
+  // 清除班次按鈕只給主管
+  document.getElementById('btn-clear-sched').style.display=isMgr?'':'none';
+  document.getElementById('btn-clear-cl').style.display=isMgr?'':'none';
+  document.getElementById('sched-perm-note').textContent=
+    isMgr?'主管模式：可編輯所有人班次':'員工模式：只能編輯自己的班次';
+}
+
+function isManager(){ return currentUser&&currentUser.role==='manager'; }
+function canEditSched(empId){ return isManager()||currentUser.id===empId; }
+function canEditCl(empId){ return isManager()||currentUser.id===empId||!empId; }
+
 /* ── State ── */
-const now = new Date();
-let schedYear=now.getFullYear(), schedMonth=now.getMonth()+1;
-let clYear=now.getFullYear(), clMonth=now.getMonth()+1, clDay=1;
-
-const empNames = {};  // {id: name}  — loaded from Firebase
-const schedData = {}; // {yyyymm: {empId: {d: shift}}}
-const clData = {};    // {yyyymm: {d: {roomName: {emp,checkout,done,mgr,teach,note}}}}
-
-let schedListener=null, clListener=null, empNamesListener=null;
+const now=new Date();
+let schedYear=now.getFullYear(),schedMonth=now.getMonth()+1;
+let clYear=now.getFullYear(),clMonth=now.getMonth()+1,clDay=now.getDate();
+const schedData={},clData={};
+let schedListener=null,clListener=null,empNamesListener=null;
 
 /* ── Helpers ── */
-function daysInMonth(y,m){ return new Date(y,m,0).getDate(); }
-function ymKey(y,m){ return `${y}${String(m).padStart(2,'0')}`; }
+function daysInMonth(y,m){return new Date(y,m,0).getDate();}
+function ymKey(y,m){return `${y}${String(m).padStart(2,'0')}`;}
 function toast(msg){
   const el=document.getElementById('toast');
-  el.textContent=msg; el.classList.add('show');
-  clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),2200);
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2200);
 }
 function download(name,content){
-  const bom='\uFEFF';
   const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([bom+content],{type:'text/csv;charset=utf-8'}));
-  a.download=name; a.click();
-  toast('已下載：'+name);
+  a.href=URL.createObjectURL(new Blob(['\uFEFF'+content],{type:'text/csv;charset=utf-8'}));
+  a.download=name;a.click();toast('已下載：'+name);
 }
+function roomKey(name){return name.replace(/[.#$/\[\]]/g,'_');}
 
 /* ── Year dropdowns ── */
 function fillYears(selId){
-  const sel=document.getElementById(selId);
-  sel.innerHTML='';
+  const sel=document.getElementById(selId);sel.innerHTML='';
   for(let y=2024;y<=2030;y++){
     const o=document.createElement('option');
-    o.value=y; o.textContent=y+'年';
-    if(y===now.getFullYear()) o.selected=true;
+    o.value=y;o.textContent=y+'年';
+    if(y===now.getFullYear())o.selected=true;
     sel.appendChild(o);
   }
 }
-fillYears('sched-year'); fillYears('cl-year');
+fillYears('sched-year');fillYears('cl-year');
 document.getElementById('sched-month').value=String(schedMonth);
 document.getElementById('cl-month').value=String(clMonth);
 
@@ -264,31 +374,27 @@ function onMonthChange(tab){
   if(tab==='sched'){
     schedYear=parseInt(document.getElementById('sched-year').value);
     schedMonth=parseInt(document.getElementById('sched-month').value);
-    document.getElementById('sched-month-label').textContent=`${schedYear}年${schedMonth}月`;
     subscribeSchedData();
   } else {
     clYear=parseInt(document.getElementById('cl-year').value);
     clMonth=parseInt(document.getElementById('cl-month').value);
     clDay=1;
-    document.getElementById('cl-month-label').textContent=`${clYear}年${clMonth}月`;
     fillDateSelect();
     subscribeClData();
   }
 }
 
 function fillDateSelect(){
-  const sel=document.getElementById('cl-date');
-  sel.innerHTML='';
+  const sel=document.getElementById('cl-date');sel.innerHTML='';
   const total=daysInMonth(clYear,clMonth);
   for(let d=1;d<=total;d++){
-    const dt=new Date(clYear,clMonth-1,d);
-    const w=WEEKS[dt.getDay()];
+    const w=WEEKS[new Date(clYear,clMonth-1,d).getDay()];
     const o=document.createElement('option');
-    o.value=d; o.textContent=`${clMonth}/${d}（${w}）`;
+    o.value=d;o.textContent=`${clMonth}/${d}（${w}）`;
     sel.appendChild(o);
   }
   sel.value=clDay;
-  sel.onchange=()=>{ clDay=parseInt(sel.value); renderCleaning(); };
+  sel.onchange=()=>{clDay=parseInt(sel.value);renderCleaning();};
 }
 
 /* ── Tab ── */
@@ -298,105 +404,109 @@ function showTab(t){
   document.getElementById('sec-cleaning').classList.toggle('active',t==='cleaning');
 }
 
-/* ══════════ FIREBASE SUBSCRIBE ══════════ */
-
-/* Employee names */
+/* ── Firebase Subscribe ── */
 function subscribeEmpNames(){
   const ref=db.ref('empNames');
-  if(empNamesListener) ref.off('value',empNamesListener);
+  if(empNamesListener)ref.off('value',empNamesListener);
   empNamesListener=ref.on('value',snap=>{
-    const v=snap.val()||{};
-    Object.assign(empNames,v);
-    renderSched();
+    Object.assign(empNames,snap.val()||{});
+    buildChips();
+    if(currentUser)renderSched();
   });
 }
 
-/* Schedule */
 function subscribeSchedData(){
   const ym=ymKey(schedYear,schedMonth);
-  const ref=db.ref('sched/'+ym);
-  if(schedListener) db.ref('sched/'+schedListener).off();
+  if(schedListener)db.ref('sched/'+schedListener).off();
   schedListener=ym;
-  ref.on('value',snap=>{
+  db.ref('sched/'+ym).on('value',snap=>{
     schedData[ym]=snap.val()||{};
-    renderSched();
+    if(currentUser)renderSched();
   });
   document.getElementById('sched-month-label').textContent=`${schedYear}年${schedMonth}月`;
 }
 
-/* Cleaning */
 function subscribeClData(){
   const ym=ymKey(clYear,clMonth);
-  const ref=db.ref('cleaning/'+ym);
-  if(clListener) db.ref('cleaning/'+clListener).off();
+  if(clListener)db.ref('cleaning/'+clListener).off();
   clListener=ym;
-  ref.on('value',snap=>{
+  db.ref('cleaning/'+ym).on('value',snap=>{
     clData[ym]=snap.val()||{};
-    renderCleaning();
+    if(currentUser)renderCleaning();
   });
   document.getElementById('cl-month-label').textContent=`${clYear}年${clMonth}月`;
 }
 
-/* ══════════ SCHEDULE ══════════ */
+/* ══ SCHEDULE ══ */
 function renderSchedStats(){
   const ym=ymKey(schedYear,schedMonth);
   const days=daysInMonth(schedYear,schedMonth);
   const d=schedData[ym]||{};
   let worked=0;
-  EMPLOYEES.forEach(e=>{
-    const ed=d[e.id]||{};
-    for(let day=1;day<=days;day++){ if(ed[day]) worked++; }
-  });
+  EMPLOYEES.forEach(e=>{const ed=d[e.id]||{};for(let dd=1;dd<=days;dd++){if(ed[dd])worked++;}});
   const total=EMPLOYEES.length*days;
   const pct=Math.round(worked/total*100);
+  // My own stats
+  const myEd=(d[currentUser.id]||{});
+  let myWork=0;
+  for(let dd=1;dd<=days;dd++){if(myEd[dd])myWork++;}
   document.getElementById('sched-stats').innerHTML=`
-    <div class="stat-card"><div class="stat-label">員工人數</div><div class="stat-val">${EMPLOYEES.length}</div></div>
-    <div class="stat-card"><div class="stat-label">出勤班次</div><div class="stat-val green">${worked}</div></div>
+    <div class="stat-card"><div class="stat-label">我的出勤天</div><div class="stat-val blue">${myWork}</div></div>
+    <div class="stat-card"><div class="stat-label">全員出勤班次</div><div class="stat-val green">${worked}</div></div>
     <div class="stat-card"><div class="stat-label">休/空班次</div><div class="stat-val">${total-worked}</div></div>
     <div class="stat-card" style="flex:1;min-width:140px"><div class="stat-label">整體出勤率</div><div class="stat-val">${pct}%</div><div class="prog-wrap"><div class="prog-bar" style="width:${pct}%"></div></div></div>`;
 }
 
 function renderSched(){
+  if(!currentUser)return;
   const q=document.getElementById('sch-q').value.toLowerCase();
   const f=document.getElementById('sch-f').value;
   const ym=ymKey(schedYear,schedMonth);
   const days=daysInMonth(schedYear,schedMonth);
   const d=schedData[ym]||{};
-  const emps=EMPLOYEES.filter(e=>{
+
+  // Non-managers: only show own row
+  let emps=isManager()?EMPLOYEES:EMPLOYEES.filter(e=>e.id===currentUser.id);
+  emps=emps.filter(e=>{
     const label=e.id+' '+(empNames[e.id]||'');
-    if(q && !label.toLowerCase().includes(q)) return false;
-    if(f==='manager'&&e.role!=='manager') return false;
-    if(f==='staff'&&e.role!=='staff') return false;
+    if(q&&!label.toLowerCase().includes(q))return false;
+    if(f==='manager'&&e.role!=='manager')return false;
+    if(f==='staff'&&e.role!=='staff')return false;
     return true;
   });
+
   let h=`<thead><tr><th class="sc" style="min-width:115px">員工</th>`;
   for(let dd=1;dd<=days;dd++){
-    const dt=new Date(schedYear,schedMonth-1,dd);
-    const w=dt.getDay();
+    const w=new Date(schedYear,schedMonth-1,dd).getDay();
     const wcls=w===0?'sun':w===6?'sat':'wd';
     h+=`<th><div class="dh"><div class="dn">${dd}</div><div class="dw ${wcls}">${WEEKS[w]}</div></div></th>`;
   }
   h+=`<th style="min-width:50px">出勤天</th></tr></thead><tbody>`;
+
   emps.forEach(e=>{
     const isM=e.role==='manager';
+    const isMe=e.id===currentUser.id;
+    const editable=canEditSched(e.id);
     const ed=d[e.id]||{};
-    let work=0;
-    let cells='';
+    let work=0,cells='';
     for(let dd=1;dd<=days;dd++){
       const v=ed[dd]||'';
-      if(v) work++;
-      const dt=new Date(schedYear,schedMonth-1,dd);
-      const w=dt.getDay();
+      if(v)work++;
+      const w=new Date(schedYear,schedMonth-1,dd).getDay();
       const wknd=(w===0||w===6)&&!v?'background:rgba(0,0,0,0.02)':'';
-      let badge=v==='O'?`<span class="sb sb-on">出</span>`:v==='M'?`<span class="sb sb-mgr">主</span>`:v==='X'?`<span class="sb sb-off">休</span>`:`<span class="sb-em">—</span>`;
-      cells+=`<td class="sc-cell" style="${wknd}" onclick="cycleShift('${e.id}',${dd},'${ym}',this)">${badge}</td>`;
+      const badge=v==='O'?`<span class="sb sb-on">出</span>`:v==='M'?`<span class="sb sb-mgr">主</span>`:v==='X'?`<span class="sb sb-off">休</span>`:`<span class="sb-em">—</span>`;
+      const lockedCls=editable?'':'locked';
+      cells+=`<td class="sc-cell ${lockedCls}" style="${wknd}" onclick="${editable?`cycleShift('${e.id}',${dd},'${ym}',this)`:''}">${badge}</td>`;
     }
-    h+=`<tr><td class="sc"><div class="emp-id ${isM?'mgr':''}">
-      ${isM?'<span style="font-size:10px;color:var(--accent)">★</span>':''}
-      <span style="font-size:12px">${e.id}</span>
-      <input class="nm-in" placeholder="姓名" value="${empNames[e.id]||''}"
-        onchange="saveEmpName('${e.id}',this.value)" onclick="event.stopPropagation()">
-    </div></td>${cells}<td class="wd-cell">${work}</td></tr>`;
+    h+=`<tr class="${isMe?'my-row':''}">
+      <td class="sc"><div class="emp-id ${isM?'mgr':''}">
+        ${isM?'<span style="font-size:10px;color:var(--accent)">★</span>':''}
+        <span style="font-size:12px">${e.id}</span>
+        <input class="nm-in" placeholder="姓名" value="${empNames[e.id]||''}"
+          ${isMe||isManager()?`onchange="saveEmpName('${e.id}',this.value)"`:''} 
+          ${!isMe&&!isManager()?'disabled':''}
+          onclick="event.stopPropagation()">
+      </div></td>${cells}<td class="wd-cell">${work}</td></tr>`;
   });
   h+=`</tbody>`;
   document.getElementById('sched-table').innerHTML=h;
@@ -404,12 +514,12 @@ function renderSched(){
 }
 
 function cycleShift(eid,day,ym,cell){
+  if(!canEditSched(eid))return;
   const seq=['','O','M','X'];
   const cur=((schedData[ym]||{})[eid]||{})[day]||'';
   const next=seq[(seq.indexOf(cur)+1)%seq.length];
   db.ref(`sched/${ym}/${eid}/${day}`).set(next||null);
-  let badge=next==='O'?`<span class="sb sb-on">出</span>`:next==='M'?`<span class="sb sb-mgr">主</span>`:next==='X'?`<span class="sb sb-off">休</span>`:`<span class="sb-em">—</span>`;
-  cell.innerHTML=badge;
+  cell.innerHTML=next==='O'?`<span class="sb sb-on">出</span>`:next==='M'?`<span class="sb sb-mgr">主</span>`:next==='X'?`<span class="sb sb-off">休</span>`:`<span class="sb-em">—</span>`;
 }
 
 function saveEmpName(eid,val){
@@ -418,10 +528,10 @@ function saveEmpName(eid,val){
 }
 
 function clearSched(){
+  if(!isManager()){toast('只有主管可以清除');return;}
   const ym=ymKey(schedYear,schedMonth);
-  if(!confirm(`確定清除 ${schedYear}年${schedMonth}月 全部班次？`)) return;
-  db.ref('sched/'+ym).remove();
-  toast('已清除');
+  if(!confirm(`確定清除 ${schedYear}年${schedMonth}月 全部班次？`))return;
+  db.ref('sched/'+ym).remove();toast('已清除');
 }
 
 function exportSched(){
@@ -429,40 +539,38 @@ function exportSched(){
   const days=daysInMonth(schedYear,schedMonth);
   const d=schedData[ym]||{};
   const headers=['員工ID','姓名'];
-  for(let dd=1;dd<=days;dd++){
-    const dt=new Date(schedYear,schedMonth-1,dd);
-    headers.push(`${schedMonth}/${dd}(${WEEKS[dt.getDay()]})`);
-  }
+  for(let dd=1;dd<=days;dd++){headers.push(`${schedMonth}/${dd}(${WEEKS[new Date(schedYear,schedMonth-1,dd).getDay()]})`);}
   headers.push('出勤天');
   let csv=headers.join(',')+'\n';
   EMPLOYEES.forEach(e=>{
-    let work=0;
-    const row=[];
-    const ed=d[e.id]||{};
+    let work=0;const row=[];const ed=d[e.id]||{};
     for(let dd=1;dd<=days;dd++){const v=ed[dd]||'';if(v)work++;row.push(v);}
     csv+=`${e.id},${empNames[e.id]||''},${row.join(',')},${work}\n`;
   });
   download(`${schedYear}年${schedMonth}月排班表.csv`,csv);
 }
 
-/* ══════════ CLEANING ══════════ */
-function roomKey(name){ return name.replace(/[.#$/\[\]]/g,'_'); }
-
+/* ══ CLEANING ══ */
 function renderClStats(ym,day){
   const dayData=((clData[ym]||{})[day])||{};
-  let done=0,mgr=0;
-  ROOMS.forEach(r=>{const rd=dayData[roomKey(r.name)]||{};if(rd.done)done++;if(rd.mgr)mgr++;});
+  let done=0,mgr=0,mine=0;
+  ROOMS.forEach(r=>{
+    const rd=dayData[roomKey(r.name)]||{};
+    if(rd.done)done++;if(rd.mgr)mgr++;
+    if(rd.emp===currentUser.id)mine++;
+  });
   const total=ROOMS.length;
   const pct=Math.round(done/total*100);
   document.getElementById('cl-stats').innerHTML=`
     <div class="stat-card"><div class="stat-label">今日物件</div><div class="stat-val">${total}</div></div>
+    <div class="stat-card"><div class="stat-label">我負責</div><div class="stat-val blue">${mine}</div></div>
     <div class="stat-card"><div class="stat-label">已完成</div><div class="stat-val green">${done}</div></div>
     <div class="stat-card"><div class="stat-label">未完成</div><div class="stat-val ${total-done>0?'red':''}">${total-done}</div></div>
-    <div class="stat-card"><div class="stat-label">主管在場</div><div class="stat-val blue">${mgr}</div></div>
     <div class="stat-card" style="flex:1;min-width:140px"><div class="stat-label">完成率</div><div class="stat-val">${pct}%</div><div class="prog-wrap"><div class="prog-bar" style="width:${pct}%"></div></div></div>`;
 }
 
 function renderCleaning(){
+  if(!currentUser)return;
   const ym=ymKey(clYear,clMonth);
   const day=clDay;
   const typ=document.getElementById('cl-type').value;
@@ -470,68 +578,83 @@ function renderCleaning(){
   const df=document.getElementById('cl-df').value;
   const dayData=((clData[ym]||{})[day])||{};
   const rooms=ROOMS.filter(r=>{
-    if(typ&&r.type!==typ) return false;
-    if(q&&!r.name.toLowerCase().includes(q)) return false;
+    if(typ&&r.type!==typ)return false;
+    if(q&&!r.name.toLowerCase().includes(q))return false;
     const rd=dayData[roomKey(r.name)]||{};
-    if(df==='done'&&!rd.done) return false;
-    if(df==='undone'&&rd.done) return false;
+    if(df==='done'&&!rd.done)return false;
+    if(df==='undone'&&rd.done)return false;
+    if(df==='mine'&&rd.emp!==currentUser.id)return false;
     return true;
   });
   renderClStats(ym,day);
   let h=`<thead><tr>
-    <th style="width:32px">#</th>
-    <th class="sc" style="min-width:155px">房間名稱</th>
-    <th style="width:55px">類別</th>
-    <th style="width:75px">退房時間</th>
-    <th style="width:75px">負責員工</th>
-    <th style="width:55px">完成✓</th>
-    <th style="width:65px">主管在場✓</th>
-    <th style="width:60px">教學✓</th>
-    <th>備註</th>
+    <th style="width:30px">#</th>
+    <th class="sc" style="min-width:150px">房間名稱</th>
+    <th style="width:50px">類別</th>
+    <th style="width:72px">退房時間</th>
+    <th style="width:72px">開始時間</th>
+    <th style="width:72px">結束時間</th>
+    <th style="width:80px">負責員工</th>
+    <th style="width:52px;text-align:center">完成✓</th>
+    <th style="width:72px;text-align:center">主管在場✓</th>
+    <th style="width:52px;text-align:center">教學✓</th>
+    <th style="min-width:120px;text-align:left;padding-left:8px">備註</th>
   </tr></thead><tbody>`;
   rooms.forEach((r,i)=>{
     const rk=roomKey(r.name);
     const rd=dayData[rk]||{};
     const esc=r.name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-    h+=`<tr class="${rd.done?'done-row':''}">
+    // editable if: manager, or assigned to me, or not yet assigned
+    const assigned=rd.emp||'';
+    const editable=canEditCl(assigned);
+    const dis=editable?'':'disabled';
+    const empDisplay=assigned?(empNames[assigned]||assigned):'';
+    h+=`<tr class="${rd.done?'done-row':''}${assigned===currentUser.id?' my-row':''}">
       <td class="nc">${i+1}</td>
       <td class="sc"><span class="rn">${r.name}</span></td>
       <td><span class="badge ${r.type==='自社'?'badge-own':'badge-oth'}">${r.type}</span></td>
-      <td><input class="cl-in" type="text" placeholder="HH:MM" value="${rd.checkout||''}" onchange="saveCl('${ym}',${day},'${esc}','checkout',this.value)" style="width:68px"></td>
-      <td><input class="cl-in" type="text" placeholder="員工ID" value="${rd.emp||''}" onchange="saveCl('${ym}',${day},'${esc}','emp',this.value)" style="width:68px"></td>
-      <td class="ck-wrap"><input type="checkbox" ${rd.done?'checked':''} onchange="saveCl('${ym}',${day},'${esc}','done',this.checked);this.closest('tr').classList.toggle('done-row',this.checked);renderClStats('${ym}',${day})"></td>
-      <td class="ck-wrap"><input type="checkbox" ${rd.mgr?'checked':''} onchange="saveCl('${ym}',${day},'${esc}','mgr',this.checked);renderClStats('${ym}',${day})"></td>
-      <td class="ck-wrap"><input type="checkbox" ${rd.teach?'checked':''} onchange="saveCl('${ym}',${day},'${esc}','teach',this.checked)"></td>
-      <td><input class="cl-in" type="text" placeholder="備註" value="${rd.note||''}" onchange="saveCl('${ym}',${day},'${esc}','note',this.value)"></td>
+      <td><input class="cl-in" type="text" placeholder="HH:MM" value="${rd.checkout||''}" ${dis} onchange="saveCl('${ym}',${day},'${esc}','checkout',this.value)" style="width:68px"></td>
+      <td><input class="cl-in" type="text" placeholder="HH:MM" value="${rd.startTime||''}" ${dis} onchange="saveCl('${ym}',${day},'${esc}','startTime',this.value)" style="width:68px"></td>
+      <td><input class="cl-in" type="text" placeholder="HH:MM" value="${rd.endTime||''}" ${dis} onchange="saveCl('${ym}',${day},'${esc}','endTime',this.value)" style="width:68px"></td>
+      <td><input class="cl-in" type="text" placeholder="${isManager()?'員工ID':'我的ID'}" value="${assigned}" ${isManager()?`onchange="saveCl('${ym}',${day},'${esc}','emp',this.value)"`:`readonly`} style="width:72px" title="${empDisplay}"></td>
+      <td class="ck-wrap"><input type="checkbox" ${rd.done?'checked':''} ${dis} onchange="saveCl('${ym}',${day},'${esc}','done',this.checked);this.closest('tr').classList.toggle('done-row',this.checked);renderClStats('${ym}',${day})"></td>
+      <td class="ck-wrap"><input type="checkbox" ${rd.mgr?'checked':''} ${dis} onchange="saveCl('${ym}',${day},'${esc}','mgr',this.checked);renderClStats('${ym}',${day})"></td>
+      <td class="ck-wrap"><input type="checkbox" ${rd.teach?'checked':''} ${dis} onchange="saveCl('${ym}',${day},'${esc}','teach',this.checked)"></td>
+      <td><input class="cl-in" type="text" placeholder="備註" value="${rd.note||''}" ${dis} onchange="saveCl('${ym}',${day},'${esc}','note',this.value)" style="width:100%;min-width:110px"></td>
     </tr>`;
   });
   h+=`</tbody>`;
   document.getElementById('cl-table').innerHTML=h;
 }
 
+function claimRoom(ym,day,name){
+  saveCl(ym,day,name,'emp',currentUser.id);
+  toast('已認領：'+name);
+  setTimeout(()=>renderCleaning(),300);
+}
+
 function saveCl(ym,day,name,field,val){
   const rk=roomKey(name);
-  db.ref(`cleaning/${ym}/${day}/${rk}/${field}`).set(val===''?null:val);
+  db.ref(`cleaning/${ym}/${day}/${rk}/${field}`).set(val===''||val===false?null:val);
 }
 
 function clearDayCl(){
+  if(!isManager()){toast('只有主管可以清除');return;}
   const ym=ymKey(clYear,clMonth);
-  if(!confirm(`確定清除 ${clYear}/${clMonth}/${clDay} 所有打掃紀錄？`)) return;
-  db.ref(`cleaning/${ym}/${clDay}`).remove();
-  toast('已清除');
+  if(!confirm(`確定清除 ${clYear}/${clMonth}/${clDay} 所有打掃紀錄？`))return;
+  db.ref(`cleaning/${ym}/${clDay}`).remove();toast('已清除');
 }
 
 function exportCl(){
   const ym=ymKey(clYear,clMonth);
   const days=daysInMonth(clYear,clMonth);
-  let csv='日期,房間名稱,類別,退房時間,負責員工,打掃完成,主管在場,教學記錄,備註\n';
+  let csv='日期,房間名稱,類別,退房時間,開始時間,結束時間,負責員工ID,負責員工姓名,打掃完成,主管在場,教學記錄,備註\n';
   for(let d=1;d<=days;d++){
-    const dt=new Date(clYear,clMonth-1,d);
-    const dateStr=`${clYear}/${clMonth}/${d}(${WEEKS[dt.getDay()]})`;
+    const dateStr=`${clYear}/${clMonth}/${d}(${WEEKS[new Date(clYear,clMonth-1,d).getDay()]})`;
     const dayData=((clData[ym]||{})[d])||{};
     ROOMS.forEach(r=>{
       const rd=dayData[roomKey(r.name)]||{};
-      csv+=`${dateStr},${r.name},${r.type},${rd.checkout||''},${rd.emp||''},${rd.done?'✓':''},${rd.mgr?'✓':''},${rd.teach?'✓':''},"${(rd.note||'').replace(/"/g,'""')}"\n`;
+      csv+=`${dateStr},${r.name},${r.type},${rd.checkout||''},${rd.startTime||''},${rd.endTime||''},${rd.emp||''},${empNames[rd.emp]||''},${rd.done?'✓':''},${rd.mgr?'✓':''},${rd.teach?'✓':''},"${(rd.note||'').replace(/"/g,'""')}"\n`;
     });
   }
   download(`${clYear}年${clMonth}月打掃紀錄.csv`,csv);
