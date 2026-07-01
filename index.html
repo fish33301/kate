@@ -492,7 +492,7 @@ function renderSched(){
   const d=schedData[ym]||{};
 
   // All users can see all employees; non-managers can only edit their own row
-  let emps=EMPLOYEES.slice();
+  let emps=isManager()?EMPLOYEES:EMPLOYEES.filter(e=>e.id===currentUser.id);
   emps=emps.filter(e=>{
     const label=e.id+' '+(empNames[e.id]||'');
     if(q&&!label.toLowerCase().includes(q))return false;
